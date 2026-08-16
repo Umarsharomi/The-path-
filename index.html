@@ -21,6 +21,28 @@
 </head>
 <body>
 <div id="root"></div>
+
+<div id="err-overlay" style="display:none;position:fixed;inset:0;background:#1a0505;color:#ffb4b4;font-family:monospace;font-size:12px;padding:16px;z-index:99999;overflow:auto;white-space:pre-wrap;"></div>
+<script>
+function showErr(msg) {
+  const el = document.getElementById('err-overlay');
+  el.style.display = 'block';
+  el.textContent += msg + "\n\n";
+}
+window.addEventListener('error', function(e) {
+  showErr('ERROR: ' + (e.message || e) + '\nFile: ' + (e.filename || '?') + ':' + (e.lineno || '?'));
+});
+window.addEventListener('unhandledrejection', function(e) {
+  showErr('PROMISE REJECTION: ' + (e.reason && e.reason.stack ? e.reason.stack : e.reason));
+});
+setTimeout(function() {
+  const root = document.getElementById('root');
+  if (root && root.children.length === 0) {
+    showErr('Still blank after 8 seconds. Root div has no content. Check the browser console, or this likely means a script failed to load (network/CDN blocked) before it could report an error here.');
+  }
+}, 8000);
+</script>
+
 <script>
 (function () {
   const PREFIX = "thepath:";
